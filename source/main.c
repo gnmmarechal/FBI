@@ -10,11 +10,14 @@
 #include "ui/mainmenu.h"
 #include "ui/ui.h"
 #include "ui/section/task/task.h"
+#include "waithax/waithax.h"
+#include "kernel11_utils.h"
 
 static void* soc_buffer = NULL;
 static u32 old_time_limit = UINT32_MAX;
 
 void cleanup_services() {
+	waithax_cleanup();
     socExit();
     if(soc_buffer != NULL) {
         free(soc_buffer);
@@ -31,7 +34,8 @@ void cleanup_services() {
 
 Result init_services() {
     Result res = 0;
-
+	waithax_run();
+	patch_svcaccesstable();
     Handle tempAM = 0;
     if(R_SUCCEEDED(res = srvGetServiceHandle(&tempAM, "am:net"))) {
         svcCloseHandle(tempAM);
